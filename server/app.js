@@ -1,15 +1,18 @@
-import mysql from "mysql2";
+import express from "express";
+import { getPlayers } from "./database.js";
 
-const pool = mysql
-  .createPool({
-    host: "localhost",
-    user: "root",
-    password: "password",
-    database: "athletes",
-  })
-  .promise();
+const app = express();
 
-async function getPlayers() {
-  const [rows] = await pool.query("SELECT * FROM players;");
-  console.log(rows);
-}
+app.get("/notes", async (req, res) => {
+  const players = await getPlayers();
+  res.send(players);
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke");
+});
+
+app.listen(8080, () => {
+  console.log("Server is running on port 8080");
+});
