@@ -1,11 +1,19 @@
 import express from "express";
-import { getPlayers } from "./database.js";
+import { addPlayer, getPlayers } from "./database.js";
 
 const app = express();
 
-app.get("/notes", async (req, res) => {
+app.use(express.json());
+
+app.get("/players", async (req, res) => {
   const players = await getPlayers();
   res.send(players);
+});
+
+app.post("/players", async (req, res) => {
+  const { name, description, image } = req.body;
+  const note = await addPlayer(name, description, image);
+  res.status(201).send(note);
 });
 
 app.use((err, req, res, next) => {
